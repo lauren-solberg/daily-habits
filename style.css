@@ -1,4 +1,4 @@
-/* Reset-ish */
+/* Basic reset */
 *,
 *::before,
 *::after {
@@ -15,7 +15,7 @@ body {
 body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
     sans-serif;
-  background-color: #070b12;
+  background-color: #050810;
   color: #f5f7ff;
 }
 
@@ -31,93 +31,133 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 32px;
-  border-bottom: 1px solid #262a35;
-  background: #050810;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
-
-.top-bar-left,
-.top-bar-right {
-  display: flex;
-  align-items: center;
-  gap: 16px;
+  padding: 12px 24px;
+  border-bottom: 1px solid #222639;
+  background: #050710;
 }
 
 .app-title {
   font-weight: 600;
-  letter-spacing: 0.03em;
-}
-
-.top-link {
-  font-size: 0.875rem;
-  color: #a1a8c7;
-  text-decoration: none;
-}
-
-.top-link:hover {
-  color: #d0d6ff;
-}
-
-.top-button {
-  border-radius: 999px;
-  border: 1px solid #4c6fff;
-  background: #4c6fff16;
-  color: #e5e9ff;
-  padding: 6px 16px;
-  font-size: 0.875rem;
-  cursor: pointer;
-}
-
-.top-button:hover {
-  background: #4c6fff33;
+  letter-spacing: 0.04em;
 }
 
 .user-pill {
   font-size: 0.8rem;
-  color: #a1a8c7;
+  color: #a0a5bf;
 }
 
-/* Main layout */
+/* Main layout: left habits / right calendar */
 .main-layout {
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  padding: 16px 24px 24px;
-  max-width: 1200px;
-  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 0;
+  overflow: hidden;
 }
 
-/* Controls */
-.controls {
+/* Left panel */
+.left-panel {
+  border-right: 1px solid #222639;
+  padding: 16px 16px 24px;
+  background: #060814;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  margin-bottom: 16px;
 }
 
+.panel-title {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #8489a6;
+  margin-bottom: 8px;
+}
+
+.habit-list {
+  list-style: none;
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 12px;
+}
+
+.habit-item {
+  font-size: 0.9rem;
+  padding: 6px 4px;
+  color: #e3e7ff;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+/* New habit form */
+.new-habit-form {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.new-habit-form input {
+  flex: 1;
+  border-radius: 999px;
+  border: 1px solid #2b3043;
+  background: #050913;
+  color: #f5f7ff;
+  padding: 6px 10px;
+  font-size: 0.85rem;
+}
+
+.new-habit-form input::placeholder {
+  color: #656a82;
+}
+
+.new-habit-form input:focus {
+  outline: none;
+  border-color: #54d96c;
+  box-shadow: 0 0 0 1px #54d96c33;
+}
+
+.new-habit-form button {
+  border-radius: 999px;
+  border: none;
+  background: #54d96c;
+  color: #050810;
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.new-habit-form button:hover {
+  filter: brightness(1.08);
+}
+
+/* Right panel / calendar */
+.right-panel {
+  padding: 16px 16px 24px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Month nav */
 .month-nav {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
+  margin-bottom: 10px;
 }
 
 .month-label {
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 500;
-  color: #e5e9ff;
 }
 
 .nav-arrow {
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
-  border: 1px solid #262a35;
-  background: #0b1020;
-  color: #e5e9ff;
+  border: 1px solid #2b3043;
+  background: #050913;
+  color: #f5f7ff;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -125,180 +165,126 @@ body {
 }
 
 .nav-arrow:hover {
-  background: #151b2c;
+  background: #101427;
 }
 
-/* New habit form */
-.new-habit-form {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.new-habit-form input {
-  flex: 1 1 220px;
-  min-width: 0;
-  border-radius: 999px;
-  border: 1px solid #262a35;
-  background: #0b1020;
-  color: #f5f7ff;
-  padding: 8px 14px;
-  font-size: 0.9rem;
-}
-
-.new-habit-form input::placeholder {
-  color: #666b80;
-}
-
-.new-habit-form input:focus {
-  outline: none;
-  border-color: #4c6fff;
-  box-shadow: 0 0 0 1px #4c6fff33;
-}
-
-.new-habit-form button {
-  border-radius: 999px;
-  border: none;
-  background: #4c6fff;
-  color: #f5f7ff;
-  padding: 8px 16px;
-  font-size: 0.9rem;
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-.new-habit-form button:hover {
-  background: #657eff;
-}
-
-/* Calendar */
-.calendar-wrapper {
-  overflow-x: auto;
-  border-radius: 12px;
-  border: 1px solid #262a35;
-  background: radial-gradient(circle at top left, #111728, #050810);
-}
-
-/* Grid: first column = habit labels, remaining = days */
+/* Calendar grid container */
 .calendar {
-  min-width: 900px;
+  flex: 1;
+  overflow: auto;
+  border-radius: 10px;
+  border: 1px solid #222639;
+  background: radial-gradient(circle at top left, #12182a, #050810);
+}
+
+/* Grid itself: first row is header, following rows are habits */
+.calendar-grid {
   display: grid;
-  /* 1 column for habit label, 31 for days */
-  grid-template-columns: minmax(180px, 260px) repeat(31, 1fr);
-  border-collapse: collapse;
+  grid-auto-rows: 32px; /* height of each row (header and habit rows) */
 }
 
-/* General cell styling */
-.calendar-header-cell,
-.calendar-day-cell,
-.calendar-habit-cell {
-  border-bottom: 1px solid #1d2231;
-  border-right: 1px solid #1d2231;
-  padding: 8px 6px;
-  font-size: 0.8rem;
-}
-
-/* Header row */
+/* Header cells */
 .calendar-header-cell {
-  text-align: center;
   font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: #8186a3;
-  background: #0b1020;
-  position: sticky;
-  top: 48px; /* under top-bar */
-  z-index: 5;
-}
-
-.calendar-header-cell:first-child {
-  text-align: left;
-  padding-left: 16px;
-  font-size: 0.75rem;
-}
-
-/* Day header number */
-.day-number {
-  display: block;
-  margin-top: 4px;
-  font-size: 0.95rem;
-  font-weight: 500;
-  color: #d0d6ff;
-}
-
-.today-header {
-  background: #141a30;
-  color: #f5f7ff;
-}
-
-/* Habit label column */
-.calendar-habit-cell {
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: #e5e9ff;
-  padding-left: 16px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  background: #090d1a;
-  position: sticky;
-  left: 0;
-  z-index: 4;
-}
-
-/* Day cells */
-.calendar-day-cell {
   text-align: center;
-  cursor: pointer;
-  background: #090d1a;
-  transition: background 0.15s ease, transform 0.05s ease;
+  padding: 4px 2px;
+  border-bottom: 1px solid #1c2133;
+  border-right: 1px solid #1c2133;
+  color: #a3a8c4;
+  background: #050913;
+  position: sticky;
+  top: 0;
+  z-index: 2;
 }
 
-.calendar-day-cell:nth-child(even) {
-  background: #060a15;
+.calendar-header-day {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.header-weekday {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.header-daynum {
+  font-size: 0.9rem;
+  color: #f1f4ff;
+}
+
+.header-today {
+  background: #1a2140;
+}
+
+/* First column label in header */
+.header-label-cell {
+  text-align: left;
+  padding-left: 10px;
+}
+
+/* Habit label cells aligned with rows */
+.calendar-habit-label {
+  font-size: 0.85rem;
+  padding-left: 10px;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #1c2133;
+  border-right: 1px solid #1c2133;
+  background: #060814;
+  color: #e3e7ff;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+/* Day cells (clickable squares) */
+.calendar-day-cell {
+  border-bottom: 1px solid #1c2133;
+  border-right: 1px solid #1c2133;
+  cursor: pointer;
+  transition: background 0.12s ease, transform 0.05s ease, box-shadow 0.12s ease;
+  background: #050913;
 }
 
 .calendar-day-cell:hover {
-  background: #151b2c;
   transform: translateY(-1px);
+  box-shadow: 0 0 0 1px #ffffff18 inset;
 }
 
-/* Checked state */
-.calendar-day-cell.checked {
-  background: #4c6fff;
-  color: #f5f7ff;
-  font-weight: 600;
+/* Completed = bright color */
+.calendar-day-cell.completed {
+  background: linear-gradient(135deg, #56e27a, #2eab4b);
 }
 
-.calendar-day-cell.checked span {
-  font-size: 0.95rem;
+/* Optional color variants per habit (just for fun) */
+.color-0.completed {
+  background: linear-gradient(135deg, #56e27a, #2eab4b);
+}
+.color-1.completed {
+  background: linear-gradient(135deg, #4cb5ff, #2979ff);
+}
+.color-2.completed {
+  background: linear-gradient(135deg, #ffd86f, #ff9f3c);
+}
+.color-3.completed {
+  background: linear-gradient(135deg, #ff7aa2, #f53855);
+}
+.color-4.completed {
+  background: linear-gradient(135deg, #b38cff, #6f46ff);
 }
 
-/* Small checkmark */
-.checkmark {
-  font-size: 0.95rem;
-}
-
-/* No habit message */
-.no-habits-message {
-  grid-column: 1 / -1;
-  text-align: center;
+/* "No habits yet" helper */
+.calendar-empty {
   padding: 24px;
+  text-align: center;
   font-size: 0.9rem;
-  color: #8186a3;
+  color: #8c92ab;
 }
 
-/* Responsive tweaks */
+/* Small screen tweaks */
 @media (max-width: 768px) {
-  .top-bar {
-    padding: 10px 16px;
-  }
-
   .main-layout {
-    padding: 12px 12px 20px;
-  }
-
-  .calendar {
-    min-width: 700px;
+    grid-template-columns: 180px minmax(0, 1fr);
   }
 }
