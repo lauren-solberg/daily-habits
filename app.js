@@ -1,22 +1,19 @@
-// --------- Data storage helpers ---------
-const STORAGE_KEY = "dailyHabitsAppData_v1";
+// ---------- Storage ----------
+const STORAGE_KEY = "habitHeatmapState_v1";
 
 function loadState() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) {
       return {
-        habits: [],
-        completions: {}, // { habitId: { 'YYYY-MM-DD': true } }
+        habits: [],                 // [{ id, name, colorIndex }]
+        completions: {}             // { habitId: { 'YYYY-MM-DD': true } }
       };
     }
     return JSON.parse(raw);
   } catch (e) {
     console.error("Failed to load state", e);
-    return {
-      habits: [],
-      completions: {},
-    };
+    return { habits: [], completions: {} };
   }
 }
 
@@ -24,156 +21,192 @@ function saveState() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 }
 
-// --------- Global state ---------
-const state = loadState();
-let currentDate = new Date(); // which month/year we are viewing
+let state = loadState();
+let currentMonthDate = new Date(); // controls which month we’re viewing
 
-// --------- DOM elements ---------
+// ---------- DOM ----------
 const monthLabelEl = document.getElementById("monthLabel");
-const calendarEl = document.getElementById("calendar");
+const calendarEl   = document.getElementById("calendar");
 const prevMonthBtn = document.getElementById("prevMonth");
 const nextMonthBtn = document.getElementById("nextMonth");
 const newHabitForm = document.getElementById("newHabitForm");
 const newHabitInput = document.getElementById("newHabitInput");
+const habitListEl = document.getElementById("habitList");
 
-// --------- Utility functions ---------
+// ---------- Utilities ----------
 function getDaysInMonth(year, monthIndex) {
-  // monthIndex: 0-11
   return new Date(year, monthIndex + 1, 0).getDate();
 }
 
 function formatMonthLabel(date) {
-  const formatter = new Intl.DateTimeFormat("en", {
+  return new Intl.DateTimeFormat("en", {
     month: "long",
-    year: "numeric",
-  });
-  return formatter.format(date);
+    year: "numeric"
+  }).format(date);
 }
 
 function dateKey(year, monthIndex, day) {
-  const month = String(monthIndex + 1).padStart(2, "0");
-  const dayStr = String(day).padStart(2, "0");
-  return `${year}-${month}-${dayStr}`;
+  const m = String(monthIndex + 1).padStart(2, "0");
+  const d = String(day).padStart(2, "0");
+  return `${year}-${m}-${d}`;
 }
 
 function isToday(year, monthIndex, day) {
-  const today = new Date();
+  const t = new Date();
   return (
-    today.getFullYear() === year &&
-    today.getMonth() === monthIndex &&
-    today.getDate() === day
+    t.getFullYear() === year &&
+    t.getMonth() === monthIndex &&
+    t.getDate() === day
   );
 }
 
-function createElement(tag, className, text) {
-  const el = document.createElement(tag);
-  if (className) el.className = className;
-  if (text !== undefined) el.textContent = text;
-  return el;
-}
-
-// --------- Render functions ---------
-function renderCalendar() {
-  const year = currentDate.getFullYear();
-  const monthIndex = currentDate.getMonth();
-  const daysInMonth = getDaysInMonth(year, monthIndex);
-
-  monthLabelEl.textContent = formatMonthLabel(currentDate);
-
-  // Clear grid
-  calendarEl.innerHTML = "";
-
+// ---------- Rendering ----------
+function renderHabitList() {
+  habitListEl.innerHTML = "";
   if (state.habits.length === 0) {
-    const msg = createElement("div", "no-habits-message", "Add your first habit to get started.");
-    calendarEl.appendChild(msg);
+    const li = document.createElement("li");
+    li.className = "habit-item";
+    li.textContent = "Add your first habit →";
+    habitListEl.appendChild(li);
     return;
   }
 
-  // --- Header row ---
-  // First cell: "Habits"
-  const habitsHeader = createElement("div", "calendar-header-cell", "Habits");
-  calendarEl.appendChild(habitsHeader);
+  state.habits.forEach(habit => {
+    const li = document.createElement("li");
+    li.className = "habit-item";
+    li.textContent = habit.name;
+    habitListEl.appendChild(li);
+  });
+}
 
-  // Day headers
+function renderCalendar() {
+  const year = currentMonthDate.getFullYear();
+  const monthIndex = currentMonthDate.getMonth();
+  const daysInMonth = getDaysInMonth(year, monthIndex);
+
+  monthLabelEl.textContent = formatMonthLabel(currentMonthDate);
+
+  calendarEl.innerHTML = "";
+
+  if (state.habits.length === 0) {
+    const emptyDiv = document.createElement("div");
+    emptyDiv.className = "calendar-empty";
+    emptyDiv.textContent = "No habits yet. Add one on the left to get started.";
+    calendarEl.appendChild(emptyDiv);
+    return;
+  }
+
+  // Build a grid with CSS grid: first col = labels, then one col per day.
+  const grid = document.createElement("div");
+  grid.className = "calendar-grid";
+
+  // Define columns dynamically
+  grid.style.gridTemplateColumns = `180px repeat(${daysInMonth}, 28px)`;
+
+  // --- Header row ---
+  // First cell: spacer labeled "Habits"
+  const labelHeader = document.createElement("div");
+  labelHeader.className = "calendar-header-cell header-label-cell";
+  labelHeader.textContent = " ";
+  grid.appendChild(labelHeader);
+
   const weekdayFormatter = new Intl.DateTimeFormat("en", { weekday: "short" });
 
   for (let day = 1; day <= daysInMonth; day++) {
-    const tempDate = new Date(year, monthIndex, day);
-    const weekday = weekdayFormatter.format(tempDate);
+    const d = new Date(year, monthIndex, day);
+    const weekday = weekdayFormatter.format(d);
 
-    const cell = createElement("div", "calendar-header-cell");
+    const cell = document.createElement("div");
+    cell.className = "calendar-header-cell";
+
     if (isToday(year, monthIndex, day)) {
-      cell.classList.add("today-header");
+      cell.classList.add("header-today");
     }
 
-    const weekdaySpan = createElement("span", null, weekday);
-    const dayNumberSpan = createElement("span", "day-number", String(day));
+    const wrapper = document.createElement("div");
+    wrapper.className = "calendar-header-day";
 
-    cell.appendChild(weekdaySpan);
-    cell.appendChild(dayNumberSpan);
+    const wSpan = document.createElement("span");
+    wSpan.className = "header-weekday";
+    wSpan.textContent = weekday;
 
-    calendarEl.appendChild(cell);
+    const nSpan = document.createElement("span");
+    nSpan.className = "header-daynum";
+    nSpan.textContent = String(day);
+
+    wrapper.appendChild(wSpan);
+    wrapper.appendChild(nSpan);
+    cell.appendChild(wrapper);
+    grid.appendChild(cell);
   }
 
   // --- Habit rows ---
-  state.habits.forEach((habit) => {
-    // Habit name cell
-    const habitCell = createElement("div", "calendar-habit-cell", habit.name);
-    calendarEl.appendChild(habitCell);
+  state.habits.forEach((habit, idx) => {
+    // Label cell
+    const labelCell = document.createElement("div");
+    labelCell.className = "calendar-habit-label";
+    labelCell.textContent = habit.name;
+    grid.appendChild(labelCell);
 
-    // Cells for each day
+    // Day cells for this habit
     for (let day = 1; day <= daysInMonth; day++) {
-      const cell = createElement("div", "calendar-day-cell");
+      const cell = document.createElement("div");
+      cell.className = "calendar-day-cell";
+
+      // colour variation per habit (0–4 cycle)
+      const colorIndex = habit.colorIndex ?? 0;
+      cell.classList.add(`color-${colorIndex}`);
+
       const key = dateKey(year, monthIndex, day);
-      const completed =
+      const done =
         state.completions[habit.id] &&
         state.completions[habit.id][key] === true;
 
-      if (completed) {
-        cell.classList.add("checked");
-        cell.innerHTML = '<span class="checkmark">✓</span>';
-      } else {
-        cell.innerHTML = "&nbsp;"; // keeps cell height
+      if (done) {
+        cell.classList.add("completed");
       }
 
       cell.addEventListener("click", () => {
         toggleCompletion(habit.id, key, cell);
       });
 
-      calendarEl.appendChild(cell);
+      grid.appendChild(cell);
     }
   });
+
+  calendarEl.appendChild(grid);
 }
 
 function toggleCompletion(habitId, key, cellEl) {
   if (!state.completions[habitId]) {
     state.completions[habitId] = {};
   }
+
   const already = state.completions[habitId][key] === true;
+
   if (already) {
     delete state.completions[habitId][key];
-    cellEl.classList.remove("checked");
-    cellEl.innerHTML = "&nbsp;";
+    cellEl.classList.remove("completed");
   } else {
     state.completions[habitId][key] = true;
-    cellEl.classList.add("checked");
-    cellEl.innerHTML = '<span class="checkmark">✓</span>';
+    cellEl.classList.add("completed");
   }
+
   saveState();
 }
 
-// --------- Event handlers ---------
+// ---------- Events ----------
 prevMonthBtn.addEventListener("click", () => {
-  const year = currentDate.getFullYear();
-  const month = currentDate.getMonth();
-  currentDate = new Date(year, month - 1, 1);
+  const y = currentMonthDate.getFullYear();
+  const m = currentMonthDate.getMonth();
+  currentMonthDate = new Date(y, m - 1, 1); // JS Date happily goes back forever
   renderCalendar();
 });
 
 nextMonthBtn.addEventListener("click", () => {
-  const year = currentDate.getFullYear();
-  const month = currentDate.getMonth();
-  currentDate = new Date(year, month + 1, 1);
+  const y = currentMonthDate.getFullYear();
+  const m = currentMonthDate.getMonth();
+  currentMonthDate = new Date(y, m + 1, 1); // and forward forever
   renderCalendar();
 });
 
@@ -182,9 +215,12 @@ newHabitForm.addEventListener("submit", (e) => {
   const name = newHabitInput.value.trim();
   if (!name) return;
 
+  const colorIndex = state.habits.length % 5; // cycle through 5 color schemes
+
   const habit = {
     id: `habit_${Date.now()}_${Math.random().toString(16).slice(2)}`,
     name,
+    colorIndex
   };
 
   state.habits.push(habit);
@@ -193,8 +229,10 @@ newHabitForm.addEventListener("submit", (e) => {
   }
   newHabitInput.value = "";
   saveState();
+  renderHabitList();
   renderCalendar();
 });
 
-// --------- Initial render ---------
+// ---------- Initial render ----------
+renderHabitList();
 renderCalendar();
