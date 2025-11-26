@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>DailyHabits</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="top-bar">
+      <div class="top-bar-left">
+        <span class="app-title">DailyHabits</span>
+        <a href="#" class="top-link">How it works</a>
+      </div>
+      <div class="top-bar-right">
+        <button class="top-button">Upgrade</button>
+        <span class="user-pill">you@example.com</span>
+      </div>
+    </header>
+
+    <main class="main-layout">
+      <section class="controls">
+        <div class="month-nav">
+          <button id="prevMonth" class="nav-arrow">&lt;</button>
+          <h1 id="monthLabel" class="month-label"></h1>
+          <button id="nextMonth" class="nav-arrow">&gt;</button>
+        </div>
+
+        <form id="newHabitForm" class="new-habit-form">
+          <input
+            id="newHabitInput"
+            type="text"
+            placeholder="Add a new habit (e.g., Didn't eat before bed)"
+            autocomplete="off"
+          />
+          <button type="submit">+ New Habit</button>
+        </form>
+      </section>
+
+      <section class="calendar-wrapper">
+        <div id="calendar" class="calendar"></div>
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
